@@ -1,7 +1,39 @@
 package main
 
 import (
-  "github.com/gin-gonic/gin"
+	"context"
+	"database/sql"
+	"net/http"
+
+	"github.com/gin-gonic/gin"
 )
 
-func GetBlogBySlug(c *gin.Context) {}
+func GetBlogBySlug(c *gin.Context) {
+  slug := c.Param("slug")
+
+  ctx := context.Background()
+  q := GetDBQueries()
+
+  post, err := q.GetPostBySlug(ctx, slug)
+  if err != nil {
+    switch err {
+    case sql.ErrNoRows:
+      c.JSON(http.StatusNotFound, gin.H{ "message": "BlogPost not found." })
+    default:
+      c.JSON(http.StatusInternalServerError, gin.H{ "message": err.Error() })
+    }
+    return
+  }
+
+  c.JSON(http.StatusOK, gin.H{
+    "content": post.Content,
+    "meta": gin.H{
+      "slug": post.Slug,
+      "title": post.Title,
+      "group": JsonNullString(post.GroupName),
+      "summary": post.Summary,
+      "postTime": post.PostTime,
+      "tags": post.Tags,
+    },
+  })
+}
