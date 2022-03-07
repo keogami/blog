@@ -6,6 +6,7 @@ import (
 	"fmt"
 	"os"
 
+	"github.com/gin-gonic/gin"
 	_ "github.com/lib/pq"
 )
 
@@ -19,6 +20,12 @@ func main() {
   if err != nil {
     panic(fmt.Errorf("Couldn't migrate DB: %w", err))
   }
+
+
+  r := gin.Default()
+  BindRoutes(r)
+
+  r.Run()
 
   fmt.Println("that worked well")
 }
