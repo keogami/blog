@@ -1,0 +1,105 @@
+openapi: 3.0.0
+
+info:
+  version: 0.1.0
+  title: Keogami's Blog API
+  description: |
+    An API that Keogami uses to publish his blogs
+  contact:
+    name: Keogami
+    email: keogami666@gmail.com
+
+paths:
+  /blog:
+    summary: The endpoint to interact with blogs
+    description: The endpoint to get a list of blogposts and to post new entries
+    get:
+      summary: Gets a list of blogposts summaries
+      description: |
+        Gets an array of BlogMeta objects with the latest entries first
+      responses:
+        200:
+          description: An array of BlogMeta objects is returned
+          content:
+            application/json:
+              schema:
+                type: array
+                items: { $ref: "#/components/schemas/BlogMeta" }
+    post:
+      summary: Publishes a new blogpost
+      description: |
+        Publishes a new blogpost, doesn't check if it exists already, and returns the BlogPost object
+      requestBody:
+        description: The details of the blog entry along with its body
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                title: { type: string }
+                summary: { type: string }
+                content: { type: string } # MD content
+                tags:
+                  type: array
+                  items: { type: string }
+      responses:
+        201:
+          description: The blogpost was successfully published and the BlogPost object is returned
+          content:
+            application/json:
+              schema: { $ref: "#/components/schemas/BlogPost" }
+        400:
+          description: The requestBody didn't follow the schema
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message: { type: string }
+  /blog/{slug}:
+    summary: Interact with individual BlogPosts
+    description: Retrieve information about a BlogPost identified by its slug
+    get:
+      summary: Gets the BlogPost object associated with the slug
+      description: Returns the BlogPost object associated slug if it is found
+      parameters:
+      - { $ref: "#/components/parameters/Slug" }
+      responses:
+        200:
+          description: The BlogPost object was found and is returned
+          content:
+            application/json:
+              schema: { $ref: "#/components/schemas/BlogPost" }
+        404:
+          description: No BlogPost object was found
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message: { type: string }
+
+components:
+  schemas:
+    BlogMeta:
+      properties:
+        slug: { type: string }
+        group: { type: string }
+        postTime: { type: integer }
+        title: { type: string }
+        summary: { type: string }
+        tags:
+          type: array
+          items: { type: string }
+
+    BlogPost:
+      properties:
+        meta: { $ref: "#/components/schemas/BlogMeta" }
+        content: { type: string }
+  parameters:
+    Slug:
+      name: slug
+      in: path
+      required: true
+      description: The slug to indentify the BlogPost
+      schema: { type: string }
