@@ -25,6 +25,10 @@ paths:
               schema:
                 type: array
                 items: { $ref: "#/components/schemas/BlogMeta" }
+
+        500:
+          $ref: "#/components/responses/InternalError"
+
     post:
       summary: Publishes a new blogpost
       description: |
@@ -49,13 +53,11 @@ paths:
             application/json:
               schema: { $ref: "#/components/schemas/BlogPost" }
         400:
-          description: The requestBody didn't follow the schema
-          content:
-            application/json:
-              schema:
-                type: object
-                properties:
-                  message: { type: string }
+          $ref: "#/components/responses/BadRequestError"
+
+        500:
+          $ref: "#/components/responses/InternalError"
+
   /blog/{slug}:
     summary: Interact with individual BlogPosts
     description: Retrieve information about a BlogPost identified by its slug
@@ -71,13 +73,10 @@ paths:
             application/json:
               schema: { $ref: "#/components/schemas/BlogPost" }
         404:
-          description: No BlogPost object was found
-          content:
-            application/json:
-              schema:
-                type: object
-                properties:
-                  message: { type: string }
+          $ref: "#/components/responses/BadRequestError"
+
+        500:
+          $ref: "#/components/responses/InternalError"
 
 components:
   schemas:
@@ -96,6 +95,11 @@ components:
       properties:
         meta: { $ref: "#/components/schemas/BlogMeta" }
         content: { type: string }
+        
+    ErrorMessage:
+      properties:
+        message: { type: string }
+        
   parameters:
     Slug:
       name: slug
@@ -103,3 +107,17 @@ components:
       required: true
       description: The slug to indentify the BlogPost
       schema: { type: string }
+
+  responses:
+    InternalError:
+      description: There was an internal error when processing the request
+      content:
+        application/json:
+          schema: { $ref: "#/components/schemas/ErrorMessage" }
+          
+    BadRequestError:
+      description: The request body didn't follow the request schema
+      content:
+        application/json:
+          schema: { $ref: "#/components/schemas/ErrorMessage" }
+
