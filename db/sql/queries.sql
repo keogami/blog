@@ -20,3 +20,18 @@ WHERE
   slug = $1
 ;
 
+-- name: UpdatePost :one
+UPDATE posts
+SET content = $2
+FROM metas
+WHERE metas.slug = $1
+RETURNING id;
+
+-- name: UpdateMeta :exec
+UPDATE metas
+SET (
+  slug, title, summary, group_name, tags
+) = (
+  $2, $3, $4, $5, $6, $7
+)
+WHERE post_id = $1;

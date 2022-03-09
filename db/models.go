@@ -17,9 +17,6 @@ type Meta struct {
 	PostTime  time.Time
 }
 
-type PgTable struct {
-}
-
 type Post struct {
 	ID      int64
 	Content string

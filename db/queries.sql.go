@@ -134,18 +134,53 @@ func (q *Queries) ListMetas(ctx context.Context) ([]Meta, error) {
 	return items, nil
 }
 
-const tablesExists = `-- name: TablesExists :one
-SELECT EXISTS (
-  SELECT FROM pg_tables
-  WHERE
-  	schemaname = 'public' AND
-  	tablename = 'posts'
+const updateMeta = `-- name: UpdateMeta :exec
+UPDATE metas
+SET (
+  slug, title, summary, group_name, tags
+) = (
+  $2, $3, $4, $5, $6, $7
 )
+WHERE post_id = $1
 `
 
-func (q *Queries) TablesExists(ctx context.Context) (bool, error) {
-	row := q.db.QueryRowContext(ctx, tablesExists)
-	var exists bool
-	err := row.Scan(&exists)
-	return exists, err
+type UpdateMetaParams struct {
+	PostID    int64
+	Slug      string
+	Title     string
+	Summary   string
+	GroupName sql.NullString
+	Tags      []string
+}
+
+func (q *Queries) UpdateMeta(ctx context.Context, arg UpdateMetaParams) error {
+	_, err := q.db.ExecContext(ctx, updateMeta,
+		arg.PostID,
+		arg.Slug,
+		arg.Title,
+		arg.Summary,
+		arg.GroupName,
+		pq.Array(arg.Tags),
+	)
+	return err
+}
+
+const updatePost = `-- name: UpdatePost :one
+UPDATE posts
+SET content = $2
+FROM metas
+WHERE metas.slug = $1
+RETURNING id
+`
+
+type UpdatePostParams struct {
+	Slug    string
+	Content string
+}
+
+func (q *Queries) UpdatePost(ctx context.Context, arg UpdatePostParams) (int64, error) {
+	row := q.db.QueryRowContext(ctx, updatePost, arg.Slug, arg.Content)
+	var id int64
+	err := row.Scan(&id)
+	return id, err
 }
