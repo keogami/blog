@@ -56,15 +56,5 @@ func PostBlog(c *gin.Context) {
     return
   }
 
-  c.JSON(http.StatusCreated, gin.H{
-    "content": params.Content,
-    "meta": gin.H{
-      "slug": meta.Slug,
-      "title": meta.Title,
-      "group": JsonNullString(meta.GroupName),
-      "summary": meta.Summary,
-      "postTime": meta.PostTime,
-      "tags": meta.Tags,
-    },
-  })
+  c.JSON(http.StatusCreated, PostFromMeta(params.Content, meta))
 }

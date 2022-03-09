@@ -25,15 +25,5 @@ func GetBlogBySlug(c *gin.Context) {
     return
   }
 
-  c.JSON(http.StatusOK, gin.H{
-    "content": post.Content,
-    "meta": gin.H{
-      "slug": post.Slug,
-      "title": post.Title,
-      "group": JsonNullString(post.GroupName),
-      "summary": post.Summary,
-      "postTime": post.PostTime,
-      "tags": post.Tags,
-    },
-  })
+  c.JSON(http.StatusOK, PostFromRow(post))
 }
