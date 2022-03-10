@@ -32,6 +32,6 @@ UPDATE metas
 SET (
   slug, title, summary, group_name, tags
 ) = (
-  $2, $3, $4, $5, $6, $7
+  $2, $3, $4, $5, $6
 )
 WHERE post_id = $1;
