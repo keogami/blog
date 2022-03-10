@@ -10,4 +10,5 @@ func BindRoutes(r *gin.Engine) {
 
   r.POST("/blog", PostBlog)
   r.PUT("/blog/:slug", PutBlog)
+  r.DELETE("/blog/:slug", MarkBlogAsDeleted)
 }
