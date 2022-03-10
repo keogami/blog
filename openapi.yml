@@ -99,6 +99,23 @@ paths:
         500:
           $ref: "#/components/responses/InternalError"
 
+    delete:
+      summary: Deletes a BlogPost from the db
+      description: Marks the BlogPost by the given slug as deleted
+      parameters:
+      - { $ref: "#/components/parameters/Slug" }
+      responses:
+        200:
+          description: The BlogPost was succesfully marked as deleted
+          content:
+            application/json:
+              schema: { $ref: "#/components/schemas/BlogPost" }
+        404:
+          $ref: "#/components/responses/BadRequestError"
+
+        500:
+          $ref: "#/components/responses/InternalError"
+
 components:
   schemas:
     BlogMeta:
