@@ -30,7 +30,21 @@ type Post struct {
   Content string `json:"content"`
 }
 
-func PostFromRow(post db.GetPublicPostBySlugRow) Post {
+func PostFromPublicRow(post db.GetPublicPostBySlugRow) Post {
+  return Post{
+    Meta: Meta{
+      Slug: post.Slug,
+      Title: post.Title,
+      Group: JsonNullString(post.GroupName),
+      PostTime: post.PostTime,
+      Summary: post.Summary,
+      Tags: post.Tags,
+    },
+    Content: post.Content,
+  }
+}
+
+func PostFromRow(post db.GetPostBySlugRow) Post {
   return Post{
     Meta: Meta{
       Slug: post.Slug,

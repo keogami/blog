@@ -25,5 +25,5 @@ func GetPublicBlogBySlug(c *gin.Context) {
     return
   }
 
-  c.JSON(http.StatusOK, PostFromRow(post))
+  c.JSON(http.StatusOK, PostFromPublicRow(post))
 }
