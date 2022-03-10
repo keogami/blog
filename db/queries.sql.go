@@ -67,7 +67,8 @@ const getPostBySlug = `-- name: GetPostBySlug :one
 SELECT id, content, post_id, slug, title, summary, group_name, tags, post_time FROM posts, metas
 WHERE
   id = post_id AND
-  slug = $1
+  slug = $1 AND
+  NOT EXISTS (SELECT post_id FROM deleted WHERE post_id = id)
 `
 
 type GetPostBySlugRow struct {
@@ -101,6 +102,9 @@ func (q *Queries) GetPostBySlug(ctx context.Context, slug string) (GetPostBySlug
 
 const listMetas = `-- name: ListMetas :many
 SELECT post_id, slug, title, summary, group_name, tags, post_time FROM metas
+WHERE post_id NOT IN (
+  SELECT post_id FROM deleted
+)
 `
 
 func (q *Queries) ListMetas(ctx context.Context) ([]Meta, error) {
@@ -132,6 +136,17 @@ func (q *Queries) ListMetas(ctx context.Context) ([]Meta, error) {
 		return nil, err
 	}
 	return items, nil
+}
+
+const markDeleted = `-- name: MarkDeleted :exec
+INSERT INTO deleted 
+SELECT post_id FROM metas 
+WHERE slug = $1
+`
+
+func (q *Queries) MarkDeleted(ctx context.Context, slug string) error {
+	_, err := q.db.ExecContext(ctx, markDeleted, slug)
+	return err
 }
 
 const updateMeta = `-- name: UpdateMeta :exec

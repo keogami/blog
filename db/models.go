@@ -7,6 +7,10 @@ import (
 	"time"
 )
 
+type Deleted struct {
+	PostID int64
+}
+
 type Meta struct {
 	PostID    int64
 	Slug      string

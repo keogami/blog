@@ -11,14 +11,17 @@ INSERT INTO metas (
 RETURNING *;
 
 -- name: ListMetas :many
-SELECT * FROM metas;
+SELECT * FROM metas
+WHERE post_id NOT IN (
+  SELECT post_id FROM deleted
+);
 
 -- name: GetPostBySlug :one
 SELECT * FROM posts, metas
 WHERE
   id = post_id AND
-  slug = $1
-;
+  slug = $1 AND
+  NOT EXISTS (SELECT post_id FROM deleted WHERE post_id = id);
 
 -- name: UpdatePost :one
 UPDATE posts
@@ -35,3 +38,8 @@ SET (
   $2, $3, $4, $5, $6
 )
 WHERE post_id = $1;
+
+-- name: MarkDeleted :exec
+INSERT INTO deleted 
+SELECT post_id FROM metas 
+WHERE slug = $1;
