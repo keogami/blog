@@ -39,7 +39,7 @@ SET (
 )
 WHERE post_id = $1;
 
--- name: MarkDeleted :exec
+-- name: MarkDeleted :execrows
 INSERT INTO deleted 
 SELECT post_id FROM metas 
 WHERE slug = $1;

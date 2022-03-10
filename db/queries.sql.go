@@ -138,15 +138,18 @@ func (q *Queries) ListMetas(ctx context.Context) ([]Meta, error) {
 	return items, nil
 }
 
-const markDeleted = `-- name: MarkDeleted :exec
+const markDeleted = `-- name: MarkDeleted :execrows
 INSERT INTO deleted 
 SELECT post_id FROM metas 
 WHERE slug = $1
 `
 
-func (q *Queries) MarkDeleted(ctx context.Context, slug string) error {
-	_, err := q.db.ExecContext(ctx, markDeleted, slug)
-	return err
+func (q *Queries) MarkDeleted(ctx context.Context, slug string) (int64, error) {
+	result, err := q.db.ExecContext(ctx, markDeleted, slug)
+	if err != nil {
+		return 0, err
+	}
+	return result.RowsAffected()
 }
 
 const updateMeta = `-- name: UpdateMeta :exec
