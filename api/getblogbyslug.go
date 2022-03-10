@@ -8,13 +8,13 @@ import (
 	"github.com/gin-gonic/gin"
 )
 
-func GetBlogBySlug(c *gin.Context) {
+func GetPublicBlogBySlug(c *gin.Context) {
   slug := c.Param("slug")
 
   ctx := context.Background()
   q := GetDBQueries()
 
-  post, err := q.GetPostBySlug(ctx, slug)
+  post, err := q.GetPublicPostBySlug(ctx, slug)
   if err != nil {
     switch err {
     case sql.ErrNoRows:

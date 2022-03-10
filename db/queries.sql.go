@@ -67,8 +67,7 @@ const getPostBySlug = `-- name: GetPostBySlug :one
 SELECT id, content, post_id, slug, title, summary, group_name, tags, post_time FROM posts, metas
 WHERE
   id = post_id AND
-  slug = $1 AND
-  NOT EXISTS (SELECT post_id FROM deleted WHERE post_id = id)
+  slug = $1
 `
 
 type GetPostBySlugRow struct {
@@ -86,6 +85,43 @@ type GetPostBySlugRow struct {
 func (q *Queries) GetPostBySlug(ctx context.Context, slug string) (GetPostBySlugRow, error) {
 	row := q.db.QueryRowContext(ctx, getPostBySlug, slug)
 	var i GetPostBySlugRow
+	err := row.Scan(
+		&i.ID,
+		&i.Content,
+		&i.PostID,
+		&i.Slug,
+		&i.Title,
+		&i.Summary,
+		&i.GroupName,
+		pq.Array(&i.Tags),
+		&i.PostTime,
+	)
+	return i, err
+}
+
+const getPublicPostBySlug = `-- name: GetPublicPostBySlug :one
+SELECT id, content, post_id, slug, title, summary, group_name, tags, post_time FROM posts, metas
+WHERE
+  id = post_id AND
+  slug = $1 AND
+  NOT EXISTS (SELECT post_id FROM deleted WHERE post_id = id)
+`
+
+type GetPublicPostBySlugRow struct {
+	ID        int64
+	Content   string
+	PostID    int64
+	Slug      string
+	Title     string
+	Summary   string
+	GroupName sql.NullString
+	Tags      []string
+	PostTime  time.Time
+}
+
+func (q *Queries) GetPublicPostBySlug(ctx context.Context, slug string) (GetPublicPostBySlugRow, error) {
+	row := q.db.QueryRowContext(ctx, getPublicPostBySlug, slug)
+	var i GetPublicPostBySlugRow
 	err := row.Scan(
 		&i.ID,
 		&i.Content,

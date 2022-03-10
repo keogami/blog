@@ -16,12 +16,18 @@ WHERE post_id NOT IN (
   SELECT post_id FROM deleted
 );
 
--- name: GetPostBySlug :one
+-- name: GetPublicPostBySlug :one
 SELECT * FROM posts, metas
 WHERE
   id = post_id AND
   slug = $1 AND
   NOT EXISTS (SELECT post_id FROM deleted WHERE post_id = id);
+
+-- name: GetPostBySlug :one
+SELECT * FROM posts, metas
+WHERE
+  id = post_id AND
+  slug = $1;
 
 -- name: UpdatePost :one
 UPDATE posts

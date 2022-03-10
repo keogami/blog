@@ -6,7 +6,7 @@ import (
 
 func BindRoutes(r *gin.Engine) {
   r.GET("/blog", GetBlogs)
-  r.GET("/blog/:slug", GetBlogBySlug)
+  r.GET("/blog/:slug", GetPublicBlogBySlug)
 
   r.POST("/blog", PostBlog)
   r.PUT("/blog/:slug", PutBlog)
