@@ -23,6 +23,16 @@ type PostBlogParams struct {
   Tags []string `json:"tags"`
 }
 
+// TODO change CreateSlugFromTitle such that, for an input title like "[4] Making a compiler" it returns "4-making-a-compiler"
+//
+// Requirements:
+// 1. all non-alphanumeric characters should be removed
+// 2. all characters should be lower case
+// 3. all spaces should be replaced with "-"
+// 
+// Hint: 
+// 1. use the "strings" package
+// 2. run `go test` command to check your implementation
 func CreateSlugFromTitle(title string) string {
   return title
 }
