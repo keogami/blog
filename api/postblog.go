@@ -4,7 +4,9 @@ import (
 	"blog/db"
 	"context"
 	"database/sql"
+	"log"
 	"net/http"
+	"regexp"
 	"strings"
 
 	"github.com/gin-gonic/gin"
@@ -37,18 +39,16 @@ type PostBlogParams struct {
 
 //func to createSlugFromTitle
 func CreateSlugFromTitle(title string) string {
-	var result strings.Builder
-	for i := 0; i < len(title); i++ {
-		b := title[i]
-		if ('a' <= b && b <= 'z') ||
-			('A' <= b && b <= 'Z') ||
-			('0' <= b && b <= '9') ||
-			b == ' ' {
-			result.WriteByte(b)
-		}
+	re, err := regexp.Compile("[^a-zA-Z0-9]+")
+
+	if err != nil {
+		log.Fatal(err)
 	}
-	LowerCase := strings.ToLower(result.String())
-	return strings.ReplaceAll(LowerCase, " ", "-")
+
+	RemoveNonAlpha := re.ReplaceAllLiteralString(title, "-")
+	LowerCase := strings.ToLower(RemoveNonAlpha)
+	LowerCase = strings.Trim(LowerCase, "-")
+	return LowerCase
 }
 
 func PostBlog(c *gin.Context) {
