@@ -34,6 +34,8 @@ type PostBlogParams struct {
 // Hint:
 // 1. use the "strings" package
 // 2. run `go test` command to check your implementation
+
+//func to createSlugFromTitle
 func CreateSlugFromTitle(title string) string {
 	var result strings.Builder
 	for i := 0; i < len(title); i++ {
