@@ -5,6 +5,8 @@ import (
 	"context"
 	"database/sql"
 	"net/http"
+	"regexp"
+	"strings"
 
 	"github.com/gin-gonic/gin"
 )
@@ -23,18 +25,13 @@ type PostBlogParams struct {
   Tags []string `json:"tags"`
 }
 
-// TODO change CreateSlugFromTitle such that, for an input title like "[4] Making a compiler" it returns "4-making-a-compiler"
-//
-// Requirements:
-// 1. all non-alphanumeric characters should be removed
-// 2. all characters should be lower case
-// 3. all spaces should be replaced with "-"
-// 
-// Hint: 
-// 1. use the "strings" package
-// 2. run `go test` command to check your implementation
+var NonAlphaRegex = regexp.MustCompile(`[^A-Za-z0-9\s]`)
+var MultipleSpaceRegex = regexp.MustCompile(`[\s]+`)
+
 func CreateSlugFromTitle(title string) string {
-  return title
+  res := NonAlphaRegex.ReplaceAllString(title, "")
+  res = MultipleSpaceRegex.ReplaceAllString(res, "-")
+  return strings.ToLower(res)
 }
 
 func PostBlog(c *gin.Context) {
