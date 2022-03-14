@@ -6,7 +6,7 @@ CREATE TABLE IF NOT EXISTS posts (
 
 CREATE TABLE IF NOT EXISTS metas (
   post_id BIGSERIAL NOT NULL REFERENCES posts(id),
-  slug text NOT NULL,
+  slug text UNIQUE NOT NULL,
   title VARCHAR(127) NOT NULL,
   summary VARCHAR(255) NOT NULL,
   group_name VARCHAR(16),
