@@ -3,7 +3,6 @@ package main
 import (
 	"blog/db"
 	"context"
-	"database/sql"
 	"net/http"
 
 	"github.com/gin-gonic/gin"
@@ -34,7 +33,7 @@ func PutBlog(c *gin.Context) {
     Slug: post.Meta.Slug,
     Title: post.Meta.Title,
     Summary: post.Meta.Summary,
-    GroupName: sql.NullString{ String: post.Meta.Group.(string), Valid: true },
+    GroupName: NullString(post.Meta.Group),
     Tags: post.Meta.Tags,
   })
   if err != nil {

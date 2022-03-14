@@ -18,6 +18,16 @@ func JsonNullString(s sql.NullString) interface{} {
 	return nil
 }
 
+func NullString(s interface{}) sql.NullString {
+  switch s.(type) {
+  case string: return sql.NullString{
+    Valid: true,
+    String: s.(string),
+  }
+  }
+  return sql.NullString{ String: "", Valid: false }
+}
+
 type PostBlogParams struct {
   Title string `json:"title"`
   Summary string `json:"summary"`
