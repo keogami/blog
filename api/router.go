@@ -1,10 +1,10 @@
-package main
+package api
 
 import (
 	"github.com/gin-gonic/gin"
 )
 
-func BindRoutes(r *gin.Engine) {
+func BindRoutes(r gin.IRouter) {
   r.GET("/blog", GetBlogs)
   r.GET("/blog/:slug", GetPublicBlogBySlug)
 
